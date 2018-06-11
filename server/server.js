@@ -1,3 +1,6 @@
+require('./config/config.js');
+
+
 const {ObjectId} = require('mongoDb');
 var express = require('express');
 var bodyParser = require('body-parser');
