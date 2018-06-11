@@ -5,6 +5,7 @@ var bodyParser = require('body-parser');
 var {mongoose} = require('./db/mongoose.js');
 var {Todo} = require('./models/todo.js');
 var {User} = require('./models/users.js');
+var _ = require('lodash');
 
 
 const port = process.env.PORT || 3000 ;
@@ -67,6 +68,38 @@ app.delete('/todos/:id' , (req , res) => {
     res.status(400).send();
   });
 });
+
+
+
+app.patch('/todos/:id' , (req , res) => {
+  var id = req.params.id ;
+  var body = _.pick(req.body, ['test' , 'completed']);
+  if (!ObjectId.isValid(id)) {
+    return res.status(404).send();
+  }
+  if (_.isBoolean(body.completed) && body.completed) {
+    body.completedAt = new Date().getTime();
+  } else {
+    body.completed = false
+    body.cpmpletedAt = null
+  }
+
+  Todo.findOneAndUpdate(id , {$set: body} , {new : true}).then((todo) => {
+    if (!todo) {
+      res.status(404).send();
+    }
+    res.send({todo});
+  }).catch((e) => {
+    res.status(400).send();
+  });
+
+
+})
+
+
+
+
+
 
 app.listen(port , () => {
   console.log(`App is listening on port: port`);
